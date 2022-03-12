@@ -1,9 +1,23 @@
-#include <Arduino.h>
+#include<Arduino.h>
+#include<network.hpp>
+#include<WiFi.h>
 
 void setup() {
-  // put your setup code here, to run once:
+  //serial setup
+  Serial.begin(9600);
+  Serial.println("Serial setup completed");
+  Serial.printf("Wifi lib has found %d networks\n",WiFi.scanNetworks());
+  //wifi setup
+  Network::Setup("wifiname","wifipassword");
+  Network::PrintAvailableNetworks();
+  Network::Connect();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  if(Network::GetStatus() == WL_CONNECTED){
+    Network::PrintNetworkInfo();
+  }else{
+    Serial.println("Error no connection detected");
+    delay(10000);
+  }
 }
