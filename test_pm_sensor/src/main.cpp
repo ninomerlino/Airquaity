@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <WiFi.h>
-namespace NET {
+#include <MQTT.h>
+
+/*namespace Debug {
 	//debug stuff
 	void Scan() {
 		int16_t conn_count = WiFi.scanNetworks();
@@ -21,33 +23,64 @@ namespace NET {
 			break;
 		}
 	}
-	//usefull stuff
-	void Connect(char* ssid, const char* pass, int timeout = 60) {
-		WiFi.mode(WIFI_STA);
-		if (WiFi.status() == WL_CONNECTED)
-			WiFi.disconnect();
-		WiFi.begin(ssid, pass);
-		Serial.print("Connecting ");
-		for (int i = 0; i < timeout * 2; i++) {
-			delay(500);
-			Serial.print("#");
-			if (WiFi.status() == WL_CONNECTED)break;
+}*/
+//Global var
+char* ssid = "lmao";
+const char* password = "lmao";
+const char* mqttId = "veryfastcarwroom";
+const char* brokerAddr = "broker.emqx.io";
+const int brokerPort = 1883;
+WiFiClient socket;
+MQTTClient mqtt;
+//Network
+void ConnectNetwork(int timeout = 60) {
+	if (WiFi.status() == WL_CONNECTED)
+		WiFi.disconnect();
+	WiFi.begin(ssid, password);
+	Serial.print("\n(WIFI)Connecting ");
+	for (int i = 0; i < timeout * 2; i++) {
+		delay(500);
+		Serial.print("#");
+		if (WiFi.status() == WL_CONNECTED){
+			Serial.print('\n');
+			return;
 		}
-		if (WiFi.status() == WL_CONNECTED)
-			Serial.println("\nConnection was successful");
-		else
-			Serial.printf("\nConnection failed with status %d\n", WiFi.status());
 	}
+	Serial.printf("\nConnection failed with status %d\n", WiFi.status());
+}
+void ConnectMQTT(int timeout = 60){
+	if(mqtt.connected())
+		mqtt.disconnect();
+	mqtt.begin(brokerAddr, brokerPort, socket);
+	Serial.print("(MQTT)Connecting ");
+	for (int i = 0; i < timeout * 2; i++) {
+		delay(500);
+		Serial.print("#");
+		if (mqtt.connect(mqttId, mqttId)){
+			Serial.print('\n');
+			return;
+		}
+	}
+	Serial.println("\nConnection to MQTT failed");
 }
 
 void setup() {
-	// serial setup
+	//setup serial
 	Serial.begin(9600);
-	Serial.println("");
-	NET::Scan();
-	NET::Connect("Uwu", "carsound");
+	//setup wifi
+	WiFi.mode(WIFI_STA);
+	ConnectNetwork();
+	//setup mqtt
+	ConnectMQTT();
+	Serial.println("Setup completed");
 }
-
+//TODO: test mqtt
+//TODO: set up stream to telegraph
 void loop() {
-	delay(10000);
+	if(WiFi.status() != WL_CONNECTED)Serial.println("No wifi connection");
+	if(!mqtt.connected())Serial.println("No mqtt connection");
+	if(!mqtt.publish("poopy/data/cose","it know where it is because it know where it isn't\n")){
+		Serial.println("Error while publishing data");
+	}
+	delay(1000);
 }
