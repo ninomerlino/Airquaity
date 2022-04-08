@@ -18,12 +18,9 @@ def on_message(client : Mqtt, userdata : Any, message : MQTTMessage):
     print(f"New publish from {userdata if userdata else 'unknown'} on topic {message.topic} {message.payload.hex()}")
     try:
         samples = list(map(lambda x: x[0],struct.iter_unpack("@H",message.payload)))
-        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=1.0,type=StandarParticulate concentration={samples[1]}")
-        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=2.5,type=StandarParticulate concentration={samples[2]}")
-        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=10.0,type=StandarParticulate concentration={samples[3]}")
-        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=1.0,type=AtmosphericEnviroment concentration={samples[4]}")
-        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=2.5,type=AtmosphericEnviroment concentration={samples[5]}")
-        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=10.0,type=AtmosphericEnviroment concentration={samples[6]}")
+        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=1.0, StandarParticulate={samples[1]},AtmosphericEnviroment={samples[4]}")
+        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=2.5, StandarParticulate={samples[2]},AtmosphericEnviroment={samples[5]}")
+        api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=10 , StandarParticulate={samples[3]},AtmosphericEnviroment={samples[6]}")
     except Exception as e:
         print("Data format is wrong")
         print(e)
