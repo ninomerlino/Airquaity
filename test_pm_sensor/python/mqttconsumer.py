@@ -17,7 +17,7 @@ def on_message(client : Mqtt, userdata : Any, message : MQTTMessage):
     global api
     print(f"New publish from {userdata if userdata else 'unknown'} on topic {message.topic} {message.payload.hex()}")
     try:
-        samples = list(map(lambda x: x[0],struct.iter_unpack("@H",message.payload)))
+        samples = [x[0] for x in struct.iter_unpack("@H",message.payload)]
         api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=1.0, StandarParticulate={samples[1]},AtmosphericEnviroment={samples[4]}")
         api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=2.5, StandarParticulate={samples[2]},AtmosphericEnviroment={samples[5]}")
         api.write(INFLUX_INFO[3],INFLUX_INFO[2],f"PM,SN={samples[0]},size=10 , StandarParticulate={samples[3]},AtmosphericEnviroment={samples[6]}")
