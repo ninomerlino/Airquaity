@@ -17,7 +17,7 @@ HM330X pmSensor;
 //Network
 void ConnectNetwork(int timeout = 60) {
 	if (WiFi.status() == WL_CONNECTED)
-		WiFi.disconnect();
+		return;
 	WiFi.begin(ssid, password);
 	Serial.print("\n(WIFI)Connecting ");
 	for (int i = 0; i < timeout * 2; i++) {
@@ -32,7 +32,7 @@ void ConnectNetwork(int timeout = 60) {
 }
 void ConnectMQTT(int timeout = 60) {
 	if (mqtt.connected())
-		mqtt.disconnect();
+		return;
 	mqtt.begin(brokerAddr, brokerPort, socket);
 	Serial.print("(MQTT)Connecting ");
 	for (int i = 0; i < timeout * 2; i++) {
@@ -46,8 +46,8 @@ void ConnectMQTT(int timeout = 60) {
 	Serial.println("\nConnection to MQTT failed");
 }
 HM330XErrorCode ReadSensorPM(uint16_t values[13]) {
-	u8 checksum = 0;
-	u8 buffer[30];
+	uint8_t checksum = 0;
+	uint8_t buffer[30];
 
 	if (pmSensor.read_sensor_value(buffer, 29))return ERROR_COMM;
 	//debug read buffer
@@ -57,11 +57,11 @@ HM330XErrorCode ReadSensorPM(uint16_t values[13]) {
 	/*			   0  2      4     6    8    10    12    14   16  18  20  22  24  26  28      29 30
 	Data structure |XX|Sen N°|PM1.0|PM2.5|PM10|PM1.0|PM2.5|PM10|0.3|0.5|1.0|2.5|5.0|10|Checksum|X|
 							 |CF=1 Standar    |Atmospheric      |Number of particle    |
-							 |partilculate    |enviroment      |with diameter above   |
-							 |matter		  |                |Xum in a lier of air  |
-							 |				ug/m^3			   |                      |
+							 |partilculate    |enviroment       |with diameter above   |
+							 |matter		  |                 |Xum in a liter of air |
+							 |				ug/m^3			    |                      |
 	*/
-	for (byte i = 1; i < 13; i++)values[i - 1] = (u16)(buffer[i * 2] << 8 | buffer[(i * 2) + 1]);
+	for (uint8_t i = 1; i < 13; i++)values[i - 1] = (uint16_t)(buffer[i * 2] << 8 | buffer[(i * 2) + 1]);
 	return NO_ERROR;
 }
 void PublishMQTT(uint16_t* data){
