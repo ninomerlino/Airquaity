@@ -18,7 +18,7 @@ api : WriteApi
 
 
 def store_pm_data(payload : bytes):
-    samples = list(map(lambda x: x[0],struct.iter_unpack("@H",payload)))
+    samples = [x[0] for x in struct.iter_unpack("@H",payload)]
     api.write(INFLUX_INFO[3],INFLUX_INFO[2],Point("PM").tag("SN",samples[0]).tag("size","1.0").field("StandarParticulate",samples[1]).field("AtmosphericEnviroment",samples[4]))        
     api.write(INFLUX_INFO[3],INFLUX_INFO[2],Point("PM").tag("SN",samples[0]).tag("size","2.5").field("StandarParticulate",samples[2]).field("AtmosphericEnviroment",samples[5]))
     api.write(INFLUX_INFO[3],INFLUX_INFO[2],Point("PM").tag("SN",samples[0]).tag("size","10").field("StandarParticulate",samples[3]).field("AtmosphericEnviroment",samples[6]))
@@ -46,10 +46,10 @@ def on_message(client : Mqtt, userdata : Any, message : MQTTMessage):
 
 def connectMQTT():
     print("Connecting to mqtt")
-    client = Mqtt(MQTT_INFO[0])
+    client = Mqtt(MQTT_INFO["client_id"])
     client.connect(MQTT_BROKER[0],MQTT_BROKER[1])
     client.on_message = on_message
-    client.subscribe(MQTT_INFO[1])
+    client.subscribe(MQTT_INFO["pm_topic"])
     return client
 
 def connectDB():
