@@ -56,10 +56,10 @@ HM330XErrorCode ReadSensorPM(uint16_t values[13]) {
 	if (checksum != buffer[28])return ERROR_OTHERS;
 	/*			   0  2      4     6    8    10    12    14   16  18  20  22  24  26  28      29 30
 	Data structure |XX|Sen N°|PM1.0|PM2.5|PM10|PM1.0|PM2.5|PM10|0.3|0.5|1.0|2.5|5.0|10|Checksum|X|
-							 |CF=1 Standar    |Atmospheric      |Number of particle    |
-							 |partilculate    |enviroment       |with diameter above   |
-							 |matter		  |                 |Xum in a liter of air |
-							 |				ug/m^3			    |                      |
+							 |CF=1 Standar    |Atmospheric     |Number of particle    |
+							 |partilculate    |enviroment      |with diameter above   |
+							 |matter		  |                |Xum in a liter of air |
+							 |				ug/m^3			   |                      |
 	*/
 	for (uint8_t i = 1; i < 13; i++)values[i - 1] = (uint16_t)(buffer[i * 2] << 8 | buffer[(i * 2) + 1]);
 	return NO_ERROR;
