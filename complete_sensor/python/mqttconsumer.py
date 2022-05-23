@@ -8,7 +8,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 # ----------------------------------------------#
 INFLUX_INFO = (
     "http://127.0.0.1:8086",
-    "ha3qJv2CKjdb_9-o55xCqd8qD_tN3kwpixwJ7ze6s7M4CKpH2GV3ReOu7n7qcbDoucS8z2jQRzjPBRqlxed0Cw==",
+    "ww9YvwgUalqFZgG69txggANcxyK2FhzmaP85iKTjNa6L-YxIme24iTuBDN1tNZF2xTCcx5TF-MtVGzP2P2YwvA==",
     "Bobo",
     "airquality",
 )
@@ -33,6 +33,8 @@ def payload_to_point(payload: bytes) -> Point:
     point.field("AE_1.0", samples[4])
     point.field("AE_2.5", samples[5])
     point.field("AE_10", samples[6])
+    point.field("TVOC_PM", samples[7])
+    point.field("CO2_EQ", samples[8])
     return point
 
 
@@ -57,7 +59,7 @@ def connectMQTT():
     client = Mqtt(MQTT_INFO["client_id"])
     client.connect(MQTT_BROKER[0], MQTT_BROKER[1])
     client.on_message = on_message
-    client.subscribe(MQTT_INFO["pm_topic"])
+    client.subscribe(MQTT_INFO["mqtt_topic"])
     return client
 
 

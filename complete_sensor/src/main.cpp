@@ -49,7 +49,7 @@ void ConnectMQTT(int timeout = 60) {
 	Serial.println("\nConnection to MQTT failed");
 }
 void PublishMQTT(uint16_t* data, uint16_t size){
-	if (!mqtt.publish(mqttTopic, (char*)data, size)) {
+	if (!mqtt.publish(mqttTopic, (char*)data, size*2)) {
 		Serial.println("Error while publishing data");
 		if (WiFi.status() != WL_CONNECTED)Serial.println("No wifi connection");
 		if (!mqtt.connected())Serial.println("No mqtt connection");
@@ -119,7 +119,7 @@ void loop() {
 		valid = false;
 	}
 	if(valid){
-		PublishMQTT(data, 8);
+		PublishMQTT(data, 9);
 	}
 	delay(5000);
 }
